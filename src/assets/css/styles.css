@@ -1,0 +1,21 @@
+body {
+  background-color: #2f74c0;
+}
+
+:root {
+  --primary: rgb(50, 195, 205);
+  --second: rgb(235, 103, 80);
+  --accent: rgb(80, 255, 195);
+}
+
+.primary {
+  background-color: var(--primary, cyan);
+}
+
+.second {
+  background-color: var(--second, red);
+}
+
+.accent {
+  background-color: var(--accent, green);
+}
