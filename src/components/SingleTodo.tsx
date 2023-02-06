@@ -7,33 +7,26 @@ import { Draggable } from "react-beautiful-dnd";
 interface Props {
   index: number;
   todo: Todo;
-  setTodoList: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setTodoList: (payload: number | Todo) => void;
 }
 
 function SingleTodo({ index, todo, setTodoList }: Props) {
   const [edit, setEdit] = useState(false);
   const [editTodo, setEditTodo] = useState(todo.todo);
 
-  const handleDone = (id: number) => {
-    setTodoList((preState) =>
-      preState.map((todo) =>
-        todo.id === id ? { ...todo, isDone: !todo.isDone } : todo
-      )
-    );
+  const handleDone = () => {
+    setTodoList({ ...todo, isDone: !todo.isDone });
   };
 
   const handleDelete = (id: number) => {
-    setTodoList((preState) => preState.filter((todo) => todo.id !== id));
+    setTodoList(id);
   };
 
   const handleEdit = (e: React.FormEvent, id: number) => {
     e.preventDefault();
 
-    setTodoList((preState) =>
-      preState.map((todo) =>
-        todo.id === id ? { ...todo, todo: editTodo } : todo
-      )
-    );
+    setTodoList({ ...todo, todo: editTodo });
+    setEditTodo("");
     setEdit(false);
   };
 
@@ -82,7 +75,7 @@ function SingleTodo({ index, todo, setTodoList }: Props) {
             <span className="icon" onClick={() => handleDelete(todo.id)}>
               <AiFillDelete />
             </span>
-            <span className="icon" onClick={() => handleDone(todo.id)}>
+            <span className="icon" onClick={() => handleDone()}>
               <MdDone />
             </span>
           </div>

@@ -4,19 +4,22 @@ import { Todo } from "./models/Todo";
 import TodoList from "./components/TodoList";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import "./App.css";
-import { TodoProvider } from "./TodoProvider";
+import { useTodo, useTodoDispatch, keyTodo } from "./TodoProvider";
 
 function App() {
   const [todo, setTodo] = useState<string>("");
-  const [todoList, setTodoList] = useState<Todo[]>([]);
-  const [completedList, setCompletedList] = useState<Todo[]>([]);
-  const [doingList, setDoingList] = useState<Todo[]>([]);
+  const dispatch = useTodoDispatch();
+  const {
+    active: todoList,
+    completed: completedList,
+    doing: doingList,
+  } = useTodo();
 
   const handleAdd = (e: React.FormEvent) => {
     e.preventDefault();
 
     if (todo) {
-      setTodoList([...todoList, { id: Date.now(), todo, isDone: false }]);
+      dispatch({ type: "active/add", payload: todo });
       setTodo("");
     }
   };
@@ -56,28 +59,32 @@ function App() {
       doing.splice(destination.index, 0, add);
     }
 
-    setTodoList(active);
-    setCompletedList(completed);
-    setDoingList(doing);
+    dispatch({ type: "active/copy", payload: active });
+    dispatch({ type: "completed/copy", payload: completed });
+    dispatch({ type: "doing/copy", payload: doing });
+  };
+
+  const setTodoList = (key: keyTodo, payload: number | Todo) => {
+    if (typeof payload === "number") {
+      dispatch({ type: `${key}/remove`, payload });
+    } else {
+      dispatch({ type: `${key}/edit`, payload });
+    }
   };
 
   return (
-    <TodoProvider>
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="App">
-          <h2>Devourer</h2>
-          <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
-          <TodoList
-            todoList={todoList}
-            completedList={completedList}
-            doingList={doingList}
-            setTodoList={setTodoList}
-            setCompletedList={setCompletedList}
-            setDoingList={setDoingList}
-          />
-        </div>
-      </DragDropContext>
-    </TodoProvider>
+    <DragDropContext onDragEnd={onDragEnd}>
+      <div className="App">
+        <h2>Devourer</h2>
+        <InputField todo={todo} setTodo={setTodo} handleAdd={handleAdd} />
+        <TodoList
+          todoList={todoList}
+          completedList={completedList}
+          doingList={doingList}
+          setTodoList={setTodoList}
+        />
+      </div>
+    </DragDropContext>
   );
 }
 

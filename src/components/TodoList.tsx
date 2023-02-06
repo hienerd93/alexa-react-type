@@ -1,5 +1,6 @@
 import React from "react";
 import { Todo } from "../models/Todo";
+import { keyTodo } from "../TodoProvider";
 import SingleTodo from "./SingleTodo";
 import { StrictDroppable } from "./StrictDroppable";
 import "./styles.css";
@@ -8,19 +9,10 @@ interface Props {
   todoList: Todo[];
   completedList: Todo[];
   doingList: Todo[];
-  setTodoList: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setCompletedList: React.Dispatch<React.SetStateAction<Todo[]>>;
-  setDoingList: React.Dispatch<React.SetStateAction<Todo[]>>;
+  setTodoList: (key: keyTodo, payload: number | Todo) => void;
 }
 
-function TodoList({
-  todoList,
-  completedList,
-  doingList,
-  setTodoList,
-  setCompletedList,
-  setDoingList,
-}: Props) {
+function TodoList({ todoList, completedList, doingList, setTodoList }: Props) {
   return (
     <div className="container u-max-full-width todo-content">
       <div className="columns four">
@@ -39,7 +31,7 @@ function TodoList({
                   index={index}
                   todo={todo}
                   key={todo.id}
-                  setTodoList={setTodoList}
+                  setTodoList={(payload) => setTodoList("active", payload)}
                 />
               ))}
               {provided.placeholder}
@@ -63,7 +55,7 @@ function TodoList({
                   index={index}
                   todo={todo}
                   key={todo.id}
-                  setTodoList={setDoingList}
+                  setTodoList={(payload) => setTodoList("doing", payload)}
                 />
               ))}
               {provided.placeholder}
@@ -87,7 +79,7 @@ function TodoList({
                   index={index}
                   todo={todo}
                   key={todo.id}
-                  setTodoList={setCompletedList}
+                  setTodoList={(payload) => setTodoList("completed", payload)}
                 />
               ))}
               {provided.placeholder}
