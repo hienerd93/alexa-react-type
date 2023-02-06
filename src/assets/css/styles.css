@@ -19,3 +19,7 @@ body {
 .accent {
   background-color: var(--accent, green);
 }
+
+.danger {
+  color: var(--second, red);
+}
