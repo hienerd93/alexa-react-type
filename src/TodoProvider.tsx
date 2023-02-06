@@ -32,8 +32,18 @@ const initTodo = {
 const TodoContext = createContext<TodoInterface>(initTodo);
 const TodoDispatchContext = createContext<React.Dispatch<Actions>>(() => null);
 
+const getStorage = (key: string) => {
+  try {
+    const tmp = sessionStorage.getItem(key) || "";
+    return JSON.parse(tmp);
+  } catch {
+    return initTodo;
+  }
+};
+
 export const TodoProvider = ({ children }: { children: React.ReactNode }) => {
-  const [state, dispatch] = useReducer(todoReducer, initTodo);
+  const init = getStorage("todo");
+  const [state, dispatch] = useReducer(todoReducer, init);
 
   return (
     <TodoContext.Provider value={state}>
@@ -52,33 +62,38 @@ export function useTodoDispatch() {
   return useContext(TodoDispatchContext);
 }
 
+const setStorage = (arg: TodoInterface) => {
+  sessionStorage.setItem("todo", JSON.stringify(arg));
+  return arg;
+};
+
 const todoReducer = (state: TodoInterface, action: Actions) => {
   const term = action.type.split("/")[0] as keyTodo;
 
   switch (true) {
     case action.type.includes("add"):
-      return {
+      return setStorage({
         ...state,
         [term]: [
           ...state[term],
           { id: Date.now(), todo: action.payload, isDone: false },
         ],
-      };
+      });
     case action.type.includes("remove"):
-      return {
+      return setStorage({
         ...state,
         [term]: state[term].filter((t) => t.id !== action.payload),
-      };
+      });
     case action.type.includes("edit"):
-      return {
+      return setStorage({
         ...state,
         [term]: state[term].map((t) =>
           t.id === (action.payload as Todo).id ? action.payload : t
         ),
-      };
+      });
     case action.type.includes("copy"):
-      return { ...state, [term]: action.payload };
+      return setStorage({ ...state, [term]: action.payload });
     default:
-      return state;
+      return setStorage({ ...state });
   }
 };
