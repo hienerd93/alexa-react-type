@@ -4,7 +4,7 @@ import { Todo } from "./models/Todo";
 import TodoList from "./components/TodoList";
 import { DragDropContext, DropResult } from "react-beautiful-dnd";
 import "./App.css";
-import { RootProvider } from "./RootProvider";
+import { TodoProvider } from "./TodoProvider";
 
 function App() {
   const [todo, setTodo] = useState<string>("");
@@ -62,7 +62,7 @@ function App() {
   };
 
   return (
-    <RootProvider>
+    <TodoProvider>
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="App">
           <h2>Devourer</h2>
@@ -77,7 +77,7 @@ function App() {
           />
         </div>
       </DragDropContext>
-    </RootProvider>
+    </TodoProvider>
   );
 }
 
